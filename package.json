@@ -3,6 +3,12 @@
   "version": "0.1.3",
   "author": "raleighy <raleighy@163.com>",
   "homepage": "https://github.com/RaleighY/femi-scripts",
+  "keywords": [
+    "JavaScript",
+    "TypeScript",
+    "React",
+    "Mirco Frontend"
+  ],
   "license": "MIT",
   "bin": {
     "femi-scripts": "./bin/femi-scripts.js",
