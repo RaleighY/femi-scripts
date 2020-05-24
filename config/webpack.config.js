@@ -49,7 +49,7 @@ module.exports = function configFac(appName) {
         {
           oneOf: [
             {
-              test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+              test: /\.(bmp|gif|jpe?g|png)$/,
               loader: "url-loader",
               options: {
                 limit: 10000,

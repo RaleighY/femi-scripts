@@ -4,9 +4,8 @@
 
 declare namespace NodeJS {
   interface ProcessEnv {
-    NODE_ENV: "development" | "production" | "test"
-    PUBLIC_URL: string
-    REACT_APP_API_PREFIX?: string
+    readonly NODE_ENV: "development" | "production" | "test"
+    readonly PUBLIC_URL: string
   }
 }
 
@@ -42,14 +41,31 @@ declare module "*.webp" {
 
 declare module "*.svg" {
   import * as React from "react"
-
-  export const ReactComponent: React.SFC<React.SVGProps<SVGSVGElement>>
+  export const ReactComponent: React.FunctionComponent<React.SVGProps<SVGSVGElement> & {
+    title?: string
+  }>
 
   const src: string
   export default src
 }
 
-declare module "*.json" {
-  const value: any
-  export default value
+declare module "*.module.css" {
+  const classes: { readonly [key: string]: string }
+  export default classes
 }
+
+declare module "*.module.scss" {
+  const classes: { readonly [key: string]: string }
+  export default classes
+}
+
+declare module "*.module.sass" {
+  const classes: { readonly [key: string]: string }
+  export default classes
+}
+
+declare module "*.woff"
+declare module "*.woff2"
+declare module "*.eot"
+declare module "*.otf"
+declare module "*.ttf"
