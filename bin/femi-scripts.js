@@ -52,7 +52,7 @@ function GoSpawn(script, args) {
 program
   .command("build")
   .arguments("[env...]")
-  .description("build the project")
+  .description("build project")
   .action(env => {
     GoSpawn("build", env)
   })
@@ -67,6 +67,19 @@ program
     //   return
     // } else {
     GoSpawn("start", env)
+    // }
+  })
+
+program
+  .command("server")
+  .arguments("[env...]")
+  .description("build server project")
+  .action(env => {
+    // if (env.length > 1) {
+    //   console.log("Only one is Supported for now.")
+    //   return
+    // } else {
+    GoSpawn("server", env)
     // }
   })
 

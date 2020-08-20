@@ -1,7 +1,7 @@
 process.env.NODE_ENV = "production"
 
 const Webpack = require("webpack")
-const configFac = require("../config/webpack.config")
+const configFac = require("../config/webpack.config.server")
 
 const args = process.argv.slice(2)
 
