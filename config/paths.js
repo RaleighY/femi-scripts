@@ -20,6 +20,8 @@ const Entry = Object.keys(Config.entry)
   })
 
 module.exports = Object.assign(Entry, {
+  DockerfileServer: path.resolve(__dirname, "../docker/server/Dockerfile"),
+  DockerfileClient: path.resolve(__dirname, "../docker/client/Dockerfile"),
   Config: resolveApp("femi.json"),
   Output: resolveApp("dist" + (process.env.PUBLIC_URL || "")),
   Html: resolveApp("public/index.html"),
