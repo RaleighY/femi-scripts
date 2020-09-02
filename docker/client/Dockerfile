@@ -1,5 +1,5 @@
 ### stage: build ###
-FROM node:12 AS build
+FROM node:10.18-alpine3.10 AS build
 LABEL MAINTAINER="raleighy <raleighy@163.com>"
 
 # change to cnpm registry
