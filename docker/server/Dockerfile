@@ -1,5 +1,5 @@
 ### stage: build ###
-FROM node:10.18-alpine3.10 AS build
+FROM node:12 AS build
 LABEL MAINTAINER="raleighy <raleighy@163.com>"
 
 # change to cnpm registry
@@ -13,7 +13,7 @@ COPY ./ /source
 RUN cd /source && yarn build
 
 ### stage: run ###
-FROM node:10.18 AS RUN
+FROM node:12-alpine AS RUN
 COPY --from=build /source/dist /rally
 RUN cd /rally && yarn run
 EXPOSE 7000

@@ -7,7 +7,6 @@ if (args.length) {
   var typeAndname = args[0].split(":")
   var type = typeAndname[0][0].toUpperCase() + typeAndname[0].slice(1)
   var name = typeAndname[1]
-  console.log("Dockerfile" + type)
 }
 
 // docker build ./ -f ./docker/Dockerfile -t femi
