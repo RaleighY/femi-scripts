@@ -22,7 +22,8 @@ RUN yarn build
 ### stage: run ###
 FROM node:12-alpine AS RUN
 RUN yarn global add forever --registry=https://registry.npm.taobao.org/
-COPY --from=build /source/dist /source/package.json /source/
+COPY --from=build /source/dist /source/dist
+COPY --from=build /source/package.json /source/
 WORKDIR /source
-CMD [ "yarn", "go" ]
-EXPOSE 7000
+CMD [ "npm", "run", "go" ]
+EXPOSE 7000 
