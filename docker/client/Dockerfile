@@ -1,16 +1,23 @@
 ### stage: build ###
-FROM node:10.18-alpine3.10 AS build
-LABEL MAINTAINER="raleighy <raleighy@163.com>"
+FROM node:12 AS build
+LABEL MAINTAINER="rally <raleighy@163.com>"
 
-# change to cnpm registry
-RUN yarn global add nrm
-RUN nrm use taobao
+# npm -------- https://registry.npmjs.org/
+# yarn ------- https://registry.yarnpkg.com/
+# cnpm ------- http://r.cnpmjs.org/
+# taobao ----- https://registry.npm.taobao.org/
+# nj --------- https://registry.nodejitsu.com/
+# npmMirror -- https://skimdb.npmjs.com/registry/
+# edunpm ----- http://registry.enpmjs.org/
+# didi-old --- http://registry.npm.xiaojukeji.com/
+# didi-new --- http://npm.intra.xiaojukeji.com/
 
 # install dependences
+WORKDIR /source
 COPY package.json yarn.lock /source/
-RUN cd /source && yarn
+RUN yarn --registry=https://registry.npm.taobao.org/
 COPY ./ /source
-RUN cd /source && yarn build
+RUN yarn build
 
 ### stage: run ###
 FROM nginx:alpine
