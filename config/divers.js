@@ -6,6 +6,7 @@ const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const CopyPlugin = require("copy-webpack-plugin")
+const vueLoaderPlugin = require("vue-loader/lib/plugin")
 const paths = require("./paths")
 const env = require("./env")
 const userConfig = require(paths.Config)
@@ -30,6 +31,11 @@ const jsLoader = {
   test: /\.jsx?$/,
   exclude: [path.resolve(__dirname, "node_modules")],
   loader: "babel-loader",
+}
+
+const vueLoader = {
+  test: /\.vue$/,
+  loader: "vue-loader",
 }
 
 const styleLoader = {
@@ -187,6 +193,7 @@ module.exports = {
   loaders: {
     js: jsLoader,
     ts: tsLoader,
+    vue: vueLoader,
     css: {
       test: /.css$/,
       use: [env.isEnvProduction ? MiniCssExtractPlugin.loader : styleLoader, cssLoader],
@@ -195,8 +202,8 @@ module.exports = {
       test: /.less$/,
       use: [env.isEnvProduction ? MiniCssExtractPlugin.loader : styleLoader, cssLoader, lessLoader],
     },
-    fileLoader,
-    urlLoader,
+    file: fileLoader,
+    url: urlLoader,
     styleLoader,
     cssLoader,
     lessLoader,
@@ -207,6 +214,7 @@ module.exports = {
     miniExtractPlufin,
     terserJSPlugin,
     optimizeCSSAssetsPlugin,
+    vueLoaderPlugin,
   },
   splitChunks: {
     name: false,

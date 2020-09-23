@@ -15,12 +15,13 @@ module.exports = function configFac(appName) {
       rules: [
         {
           oneOf: [
-            divers.loaders.urlLoader,
+            divers.loaders.url,
             divers.loaders.css,
             divers.loaders.less,
             // divers.loaders.js,
+            divers.loaders.vue,
             divers.loaders.ts,
-            divers.loaders.fileLoader,
+            divers.loaders.file,
           ],
         },
       ],
@@ -42,6 +43,7 @@ module.exports = function configFac(appName) {
       divers.plugins.htmlWebpackPlugin,
       divers.plugins.copyPlugin,
       divers.plugins.miniExtractPlufin,
+      divers.plugins.vueLoaderPlugin,
       env.isEnvProduction && new CleanWebpackPlugin(), //清空文件夹
       /* 用于在html模板中使用环境变量做判断 */
       new InterpolateHtmlPlugin(env),

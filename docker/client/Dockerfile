@@ -21,7 +21,7 @@ RUN yarn build
 
 ### stage: run ###
 FROM nginx:alpine
-COPY --from=build /source/dist /rally
+COPY --from=build /source/dist /source
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 RUN rm -f /etc/nginx/conf.d/* /etc/nginx/sites-enabled/*
 COPY docker/site.conf /etc/nginx/conf.d/
