@@ -40,9 +40,9 @@ module.exports = function configFac(appName) {
       minimizer: [divers.plugins.terserJSPlugin, divers.plugins.optimizeCSSAssetsPlugin],
     },
     plugins: [
-      divers.plugins.htmlWebpackPlugin(),
-      divers.plugins.copyPlugin(),
-      divers.plugins.miniExtractPlugin(),
+      divers.plugins.htmlWebpackPlugin,
+      divers.plugins.copyPlugin,
+      divers.plugins.miniExtractPlugin,
       new divers.plugins.vueLoaderPlugin(),
       env.isEnvProduction && new CleanWebpackPlugin(), //清空文件夹
       /* 用于在html模板中使用环境变量做判断 */
