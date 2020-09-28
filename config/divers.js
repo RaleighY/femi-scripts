@@ -211,7 +211,7 @@ module.exports = {
   plugins: {
     htmlWebpackPlugin,
     copyPlugin,
-    miniExtractPlufin,
+    miniExtractPlugin,
     terserJSPlugin,
     optimizeCSSAssetsPlugin,
     vueLoaderPlugin,
