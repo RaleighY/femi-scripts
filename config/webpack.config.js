@@ -13,13 +13,13 @@ module.exports = function configFac(appName) {
     output: divers.output(appName),
     module: {
       rules: [
+        divers.loaders.vue,
         {
           oneOf: [
             divers.loaders.url,
             divers.loaders.css,
             divers.loaders.less,
             // divers.loaders.js,
-            divers.loaders.vue,
             divers.loaders.ts,
             divers.loaders.file,
           ],
