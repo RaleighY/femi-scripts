@@ -155,7 +155,7 @@ const copyPlugin = new CopyPlugin({
 })
 
 /* 分离出css */
-const miniExtractPlufin = new MiniCssExtractPlugin({
+const miniExtractPlugin = new MiniCssExtractPlugin({
   filename: env.isEnvProduction ? "css/[name].[hash].css" : "css/[name].css",
   chunkFilename: env.isEnvProduction ? "css/[name].[hash].chunk.css" : "css/[name].css",
   ignoreOrder: false, // Enable to remove warnings about conflicting order
