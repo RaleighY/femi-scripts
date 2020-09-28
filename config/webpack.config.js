@@ -34,7 +34,6 @@ module.exports = function configFac(appName) {
       ],
       alias: {
         vue$: "vue/dist/vue.esm.js",
-        "@": resolve("src"),
       },
       extensions: [".js", ".jsx", ".ts", ".tsx"],
     },
