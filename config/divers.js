@@ -6,13 +6,15 @@ const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const CopyPlugin = require("copy-webpack-plugin")
-const vueLoaderPlugin = require("vue-loader/lib/plugin")
+const VueLoaderPlugin = require("vue-loader/lib/plugin")
+
 const paths = require("./paths")
 const env = require("./env")
 const userConfig = require(paths.Config)
 
-const isOutputHash =
+const useOutputHash =
   env.isEnvProduction && userConfig.output && (userConfig.output.hash === false ? false : true)
+const useTs = userConfig.useTs
 
 const tsLoader = {
   test: /\.tsx?$/,
@@ -63,7 +65,7 @@ const styleLoader = {
 const cssLoader = {
   loader: "css-loader",
   options: {
-    minimize: true,
+    // minimize: true,
   },
 }
 
@@ -161,6 +163,8 @@ const miniExtractPlugin = new MiniCssExtractPlugin({
   ignoreOrder: false, // Enable to remove warnings about conflicting order
 })
 
+const vueLoaderPlugin = new VueLoaderPlugin()
+
 module.exports = {
   entry(appName) {
     const action = env.isEnvProduction ? "Build" : "Dev"
@@ -177,18 +181,26 @@ module.exports = {
       return paths.Entry_Main
     }
   },
-  output(appName) {
-    const outputApp = appName ? `${appName}/js/[name]` : "js/[name]"
-    const appHash = isOutputHash ? ".[chunkhash:8]" : ""
-    return {
-      publicPath: process.env.PUBLIC_URL ? process.env.PUBLIC_URL + "/" : "/",
-      filename: `${outputApp}${appHash}.js`,
-      chunkFilename: `${outputApp}${appHash}.chunk.js`,
-      path: paths.Output,
-    }
+  output(obj) {
+    const outputApp = obj.appName ? `${obj.appName}/js/[name]` : "js/[name]"
+    const appHash = useOutputHash ? ".[chunkhash:8]" : ""
+    return Object.assign(
+      {
+        publicPath: process.env.PUBLIC_URL ? process.env.PUBLIC_URL + "/" : "/",
+        filename: `${outputApp}${appHash}.js`,
+        chunkFilename: `${outputApp}${appHash}.chunk.js`,
+        path: paths.Output,
+      },
+      obj.system
+        ? {
+            libraryTarget: "system",
+          }
+        : {}
+    )
   },
   config: {
-    isOutputHash,
+    useOutputHash,
+    useTs,
   },
   loaders: {
     js: jsLoader,

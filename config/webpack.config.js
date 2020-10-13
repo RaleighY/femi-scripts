@@ -6,36 +6,31 @@ const InterpolateHtmlPlugin = require("interpolate-html-plugin")
 const env = require("./env")
 const divers = require("./divers")
 
-module.exports = function configFac(appName) {
+module.exports = function configFac(obj) {
   return {
     mode: env.NODE_ENV,
-    entry: divers.entry(appName),
-    output: divers.output(appName),
+    entry: divers.entry(obj.appName),
+    output: divers.output(obj),
     module: {
       rules: [
         divers.loaders.vue,
-        {
-          oneOf: [
-            divers.loaders.url,
-            divers.loaders.css,
-            divers.loaders.less,
-            // divers.loaders.js,
-            divers.loaders.ts,
-            divers.loaders.file,
-          ],
-        },
+        divers.loaders.url,
+        divers.loaders.css,
+        divers.loaders.less,
+        divers.loaders.ts,
       ],
     },
     resolve: {
       plugins: [
-        new TsconfigPathsPlugin({
-          /*configFile: "./path/to/tsconfig.json" */
-        }),
-      ],
+        divers.config.useTs !== false &&
+          new TsconfigPathsPlugin({
+            /*configFile: "./path/to/tsconfig.json" */
+          }),
+      ].filter(Boolean),
       alias: {
-        vue$: "vue/dist/vue.esm.js",
+        // "@appReact": paths.resolveApp("src/apps/appReact"),
       },
-      extensions: [".js", ".jsx", ".ts", ".tsx"],
+      extensions: [".js", ".jsx", ".ts", ".tsx", ".vue"],
     },
     optimization: {
       splitChunks: divers.splitChunks,
@@ -43,18 +38,16 @@ module.exports = function configFac(appName) {
       minimizer: [divers.plugins.terserJSPlugin, divers.plugins.optimizeCSSAssetsPlugin],
     },
     plugins: [
-      divers.plugins.htmlWebpackPlugin,
-      divers.plugins.copyPlugin,
+      env.isEnvProduction && new CleanWebpackPlugin(),
+      !obj.system && divers.plugins.copyPlugin,
+      !obj.system && divers.plugins.htmlWebpackPlugin,
+      !obj.system && new InterpolateHtmlPlugin(env), // 用于在html模板中使用环境变量做判断
       divers.plugins.miniExtractPlugin,
-      new divers.plugins.vueLoaderPlugin(),
-      env.isEnvProduction && new CleanWebpackPlugin(), //清空文件夹
-      /* 用于在html模板中使用环境变量做判断 */
-      new InterpolateHtmlPlugin(env),
-      /* 用于传递环境变量 */
-      new webpack.DefinePlugin({}),
+      divers.plugins.vueLoaderPlugin,
+      new webpack.DefinePlugin({}), // 用于传递环境变量
     ].filter(Boolean),
     devtool: env.isEnvDevelopment ? "source-map" : false,
-    externals: [],
+    externals: ["React", "React-dom", "vue"],
     node: {
       fs: "empty",
     },

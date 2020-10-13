@@ -26,4 +26,5 @@ module.exports = Object.assign(Entry, {
   Output: resolveApp("dist" + (process.env.PUBLIC_URL || "")),
   Html: resolveApp("public/index.html"),
   Favicon: resolveApp("public/favicon.png"),
+  resolveApp,
 })
