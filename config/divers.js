@@ -15,7 +15,7 @@ const env = require("./env")
 const userConfig = require(paths.Config)
 
 const useOutputHash =
-  env.isEnvProduction && userConfig.output && (userConfig.output.hash === false ? false : true)
+  env.isEnvProduction && (userConfig.output && userConfig.output.hash === false ? false : true)
 const useTs = userConfig.useTs
 
 const entry = obj => {
@@ -267,6 +267,6 @@ module.exports = function(obj) {
         }
       : {},
     devtool: env.isEnvDevelopment ? "source-map" : false,
-    externals: env.isEnvProduction ? ["react", "react-dom", "vue", "vue-router"] : [],
+    externals: (env.isEnvProduction && userConfig.externals) || [],
   }
 }
