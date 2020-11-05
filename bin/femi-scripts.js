@@ -55,10 +55,11 @@ program
 
 program
   .command("start")
+  .option("-s, --system", "build target system")
   .arguments("[env...]")
   .description("start a dev server")
-  .action(env => {
-    start({ appName: env[0] })
+  .action((env, obj) => {
+    start({ appName: env[0], system: obj.system })
   })
 
 program

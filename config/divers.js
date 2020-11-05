@@ -5,6 +5,8 @@ const safePostCssParser = require("postcss-safe-parser")
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
+const { CleanWebpackPlugin } = require("clean-webpack-plugin")
+const InterpolateHtmlPlugin = require("interpolate-html-plugin")
 const CopyPlugin = require("copy-webpack-plugin")
 const VueLoaderPlugin = require("vue-loader/lib/plugin")
 
@@ -15,6 +17,41 @@ const userConfig = require(paths.Config)
 const useOutputHash =
   env.isEnvProduction && userConfig.output && (userConfig.output.hash === false ? false : true)
 const useTs = userConfig.useTs
+
+const entry = obj => {
+  const { appName } = obj
+  const action = env.isEnvProduction ? "Prod" : "Dev"
+
+  if (appName) {
+    if (appName && paths["Entry_" + appName]) {
+      console.log(`${action} Entry:`, appName)
+      return paths["Entry_" + appName]
+    } else {
+      throw new Error(`${appName} Entry Not Found`)
+    }
+  } else {
+    console.log(`${action} Entry Main`)
+    return paths.Entry_Main
+  }
+}
+
+const output = obj => {
+  const outputApp = obj.appName ? `${obj.appName}/js/[name]` : "js/[name]"
+  const appHash = useOutputHash ? ".[chunkhash:8]" : ""
+  return Object.assign(
+    {
+      publicPath: process.env.PUBLIC_URL ? process.env.PUBLIC_URL + "/" : "/",
+      filename: `${outputApp}${appHash}.js`,
+      chunkFilename: `${outputApp}${appHash}.chunk.js`,
+      path: paths.Output,
+    },
+    obj.system
+      ? {
+          libraryTarget: "system",
+        }
+      : {}
+  )
+}
 
 const tsLoader = {
   test: /\.tsx?$/,
@@ -156,6 +193,9 @@ const copyPlugin = new CopyPlugin({
   ],
 })
 
+const cleanWebpackPlugin = new CleanWebpackPlugin()
+const interpolateHtmlPlugin = new InterpolateHtmlPlugin(env)
+
 /* 分离出css */
 const miniExtractPlugin = new MiniCssExtractPlugin({
   filename: env.isEnvProduction ? "css/[name].[hash].css" : "css/[name].css",
@@ -165,82 +205,68 @@ const miniExtractPlugin = new MiniCssExtractPlugin({
 
 const vueLoaderPlugin = new VueLoaderPlugin()
 
-module.exports = {
-  entry(appName) {
-    const action = env.isEnvProduction ? "Build" : "Dev"
-
-    if (appName) {
-      if (appName && paths["Entry_" + appName]) {
-        console.log(`${action} Entry:`, appName)
-        return paths["Entry_" + appName]
-      } else {
-        throw new Error(`${appName} Entry Not Found`)
-      }
-    } else {
-      console.log(`${action} Entry Main`)
-      return paths.Entry_Main
-    }
-  },
-  output(obj) {
-    const outputApp = obj.appName ? `${obj.appName}/js/[name]` : "js/[name]"
-    const appHash = useOutputHash ? ".[chunkhash:8]" : ""
-    return Object.assign(
-      {
-        publicPath: process.env.PUBLIC_URL ? process.env.PUBLIC_URL + "/" : "/",
-        filename: `${outputApp}${appHash}.js`,
-        chunkFilename: `${outputApp}${appHash}.chunk.js`,
-        path: paths.Output,
-      },
-      obj.system
-        ? {
-            libraryTarget: "system",
-          }
-        : {}
-    )
-  },
-  config: {
-    useOutputHash,
-    useTs,
-  },
-  loaders: {
-    js: jsLoader,
-    ts: tsLoader,
-    vue: vueLoader,
-    css: {
-      test: /.css$/,
-      use: [env.isEnvProduction ? MiniCssExtractPlugin.loader : styleLoader, cssLoader],
+module.exports = function(obj) {
+  return {
+    entry: entry(obj),
+    output: output(obj),
+    config: {
+      useOutputHash,
+      useTs,
     },
-    less: {
-      test: /.less$/,
-      use: [env.isEnvProduction ? MiniCssExtractPlugin.loader : styleLoader, cssLoader, lessLoader],
-    },
-    file: fileLoader,
-    url: urlLoader,
-    styleLoader,
-    cssLoader,
-    lessLoader,
-  },
-  plugins: {
-    htmlWebpackPlugin,
-    copyPlugin,
-    miniExtractPlugin,
-    terserJSPlugin,
-    optimizeCSSAssetsPlugin,
-    vueLoaderPlugin,
-  },
-  splitChunks: {
-    name: false,
-    cacheGroups: {
-      antd: {
-        test: /[\\/]node_modules[\\/]antd[\\/]/,
-        chunks: "all",
-        name: "vendor-antd",
+    loaders: {
+      js: jsLoader,
+      ts: tsLoader,
+      vue: vueLoader,
+      css: {
+        test: /.css$/,
+        use: obj.system
+          ? [styleLoader, cssLoader]
+          : [env.isEnvProduction ? MiniCssExtractPlugin.loader : styleLoader, cssLoader],
       },
-      react: {
-        test: /[\\/]node_modules[\\/]react.*[\\/]/,
-        chunks: "all",
-        name: "vendor-react",
+      less: {
+        test: /.less$/,
+        use: obj.system
+          ? [styleLoader, cssLoader, lessLoader]
+          : [
+              env.isEnvProduction ? MiniCssExtractPlugin.loader : styleLoader,
+              cssLoader,
+              lessLoader,
+            ],
       },
+      file: fileLoader,
+      url: urlLoader,
+      styleLoader,
+      cssLoader,
+      lessLoader,
     },
-  },
+    plugins: {
+      htmlWebpackPlugin: !obj.system ? htmlWebpackPlugin : false,
+      copyPlugin: !obj.system ? copyPlugin : false,
+      interpolateHtmlPlugin: !obj.system ? interpolateHtmlPlugin : false,
+      cleanWebpackPlugin: env.isEnvProduction ? cleanWebpackPlugin : false,
+      miniExtractPlugin: !obj.system ? miniExtractPlugin : false,
+      terserJSPlugin,
+      optimizeCSSAssetsPlugin,
+      vueLoaderPlugin,
+    },
+    splitChunks: !obj.system
+      ? {
+          name: false,
+          cacheGroups: {
+            antd: {
+              test: /[\\/]node_modules[\\/]antd[\\/]/,
+              chunks: "all",
+              name: "vendor-antd",
+            },
+            react: {
+              test: /[\\/]node_modules[\\/]react.*[\\/]/,
+              chunks: "all",
+              name: "vendor-react",
+            },
+          },
+        }
+      : {},
+    devtool: env.isEnvDevelopment ? "source-map" : false,
+    externals: env.isEnvProduction ? ["react", "react-dom", "vue", "vue-router"] : [],
+  }
 }

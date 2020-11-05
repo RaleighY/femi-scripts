@@ -5,7 +5,6 @@ module.exports = function(obj) {
   const configFac = require("../config/webpack.config")
 
   const webpackConfig = configFac(obj)
-  console.log(webpackConfig)
 
   try {
     var compiler = Webpack(webpackConfig)

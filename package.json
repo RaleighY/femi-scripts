@@ -1,6 +1,6 @@
 {
   "name": "femi-scripts",
-  "version": "0.1.31",
+  "version": "0.1.32",
   "author": "raleighy <raleighy@163.com>",
   "homepage": "https://github.com/RaleighY/femi-scripts",
   "keywords": [
@@ -14,7 +14,7 @@
     "femi-scripts": "./bin/femi-scripts.js",
     "femi-fetch": "./bin/femi-fetch.js"
   },
-  "types": "./lib/react-app.d.ts",
+  "types": "./lib/femi-app.d.ts",
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",

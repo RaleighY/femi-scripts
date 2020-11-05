@@ -9,6 +9,14 @@ declare namespace NodeJS {
   }
 }
 
+declare const System: {
+  import: (module: string) => Promise<any>
+}
+
+declare interface Window {
+  System: any
+}
+
 declare module "*.bmp" {
   const src: string
   export default src

@@ -21,7 +21,7 @@ module.exports = function(obj) {
     proxy: Config.proxy,
   })
 
-  devServer.listen(4000, "localhost", err => {
+  devServer.listen(Config.port || 4000, "localhost", err => {
     if (err) {
       return console.log(err)
     }
