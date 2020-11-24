@@ -198,8 +198,9 @@ const interpolateHtmlPlugin = new InterpolateHtmlPlugin(env)
 
 /* 分离出css */
 const miniExtractPlugin = new MiniCssExtractPlugin({
-  filename: env.isEnvProduction ? "css/[name].[hash].css" : "css/[name].css",
-  chunkFilename: env.isEnvProduction ? "css/[name].[hash].chunk.css" : "css/[name].css",
+  filename: env.isEnvProduction && useOutputHash ? "css/[name].[hash].css" : "css/[name].css",
+  chunkFilename:
+    env.isEnvProduction && useOutputHash ? "css/[name].[hash].chunk.css" : "css/[name].css",
   ignoreOrder: false, // Enable to remove warnings about conflicting order
 })
 
@@ -249,23 +250,23 @@ module.exports = function(obj) {
       optimizeCSSAssetsPlugin,
       vueLoaderPlugin,
     },
-    splitChunks: !obj.system
-      ? {
-          name: false,
-          cacheGroups: {
-            antd: {
-              test: /[\\/]node_modules[\\/]antd[\\/]/,
-              chunks: "all",
-              name: "vendor-antd",
-            },
-            react: {
-              test: /[\\/]node_modules[\\/]react.*[\\/]/,
-              chunks: "all",
-              name: "vendor-react",
-            },
-          },
-        }
-      : {},
+    // splitChunks: !obj.system
+    //   ? {
+    //       name: false,
+    //       cacheGroups: {
+    //         antd: {
+    //           test: /[\\/]node_modules[\\/]antd[\\/]/,
+    //           chunks: "all",
+    //           name: "vendor-antd",
+    //         },
+    //         react: {
+    //           test: /[\\/]node_modules[\\/]react.*[\\/]/,
+    //           chunks: "all",
+    //           name: "vendor-react",
+    //         },
+    //       },
+    //     }
+    //   : {},
     devtool: env.isEnvDevelopment ? "source-map" : false,
     externals: (env.isEnvProduction && userConfig.externals) || [],
   }

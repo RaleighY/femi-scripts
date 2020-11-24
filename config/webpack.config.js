@@ -32,7 +32,7 @@ module.exports = function configFac(obj) {
       extensions: [".js", ".jsx", ".ts", ".tsx", ".vue"],
     },
     optimization: {
-      splitChunks: splitChunks,
+      // splitChunks: splitChunks,
       minimize: env.isEnvProduction,
       minimizer: [plugins.terserJSPlugin, plugins.optimizeCSSAssetsPlugin],
     },
