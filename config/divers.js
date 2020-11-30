@@ -8,7 +8,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin")
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
 const InterpolateHtmlPlugin = require("interpolate-html-plugin")
 const CopyPlugin = require("copy-webpack-plugin")
-const VueLoaderPlugin = require("vue-loader/lib/plugin")
+const VueLoaderPlugin = require("vue-loader").VueLoaderPlugin
 
 const paths = require("./paths")
 const env = require("./env")
