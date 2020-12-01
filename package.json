@@ -1,6 +1,6 @@
 {
   "name": "femi-scripts",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "raleighy <raleighy@163.com>",
   "homepage": "https://github.com/RaleighY/femi-scripts",
   "keywords": [
@@ -38,7 +38,6 @@
     "@types/styled-components": "^4.4.2",
     "@typescript-eslint/eslint-plugin": "^2.15.0",
     "@typescript-eslint/parser": "^2.15.0",
-    "@vue/compiler-sfc": "^3.0.3",
     "babel-loader": "^8.1.0",
     "child-process": "^1.0.2",
     "clean-webpack-plugin": "^3.0.0",
@@ -79,10 +78,14 @@
     "typescript": "~3.7.4",
     "typescript-plugin-styled-components": "^1.4.3",
     "url-loader": "^2.1.0",
-    "vue": "^3.0.3",
+    "vue": "^2.6.12",
     "vue-loader": "^16.1.0",
     "vue-router": "^3.4.5",
     "webpack": "^4.37.0",
     "webpack-dev-server": "^3.7.2"
+  },
+  "peerDependencies": {
+    "@vue/compiler-sfc": "^3.0.3",
+    "vue-template-compiler": "^2.6.12"
   }
 }
