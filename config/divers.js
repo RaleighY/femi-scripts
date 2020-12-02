@@ -70,8 +70,8 @@ const output = obj => {
 const plugins = obj => {
   const { isSystem } = obj
 
-  if (vueLoaderVersion === 2) {
-  } else if (vueLoaderVersion === 3) {
+  if (vueVersion === 2) {
+  } else if (vueVersion === 3) {
     var VueLoaderPlugin = require("vue-loader-v16").VueLoaderPlugin
   }
 
@@ -83,7 +83,7 @@ const plugins = obj => {
     miniExtractPlugin: !isSystem ? miniExtractPlugin : false,
     terserJSPlugin,
     optimizeCSSAssetsPlugin,
-    vueLoaderPlugin: VueLoaderPlugin,
+    vueLoaderPlugin: new VueLoaderPlugin(),
   }
 }
 
@@ -107,8 +107,8 @@ const jsLoader = {
 }
 
 const vueLoader =
-  vueLoaderVersion === 16
-    ? { test: /\.vue$/, loader: require("vue-loader-v16") }
+  vueVersion === 3
+    ? { test: /\.vue$/, loader: require("vue-loader-v16").default }
     : {
         test: /\.vue$/,
         loader: "vue-loader",
