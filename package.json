@@ -1,6 +1,6 @@
 {
   "name": "femi-scripts",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "author": "raleighy <raleighy@163.com>",
   "homepage": "https://github.com/RaleighY/femi-scripts",
   "keywords": [
@@ -49,6 +49,7 @@
     "eslint-config-prettier": "^6.9.0",
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.17.0",
+    "femi-scripts": "^0.2.4",
     "file-loader": "^4.2.0",
     "history": "^4.10.1",
     "html-loader": "^0.5.5",
