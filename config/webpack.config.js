@@ -5,6 +5,7 @@ const divers = require("./divers")
 
 module.exports = function configFac(obj) {
   const { entry, output, loaders, plugins, splitChunks, config, devtool, externals } = divers(obj)
+
   return {
     mode: env.NODE_ENV,
     entry: entry,

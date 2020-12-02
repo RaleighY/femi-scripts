@@ -50,7 +50,7 @@ program
   .arguments("[env...]")
   .description("build project")
   .action((env, obj) => {
-    build({ appName: env[0], system: obj.system })
+    build({ appName: env[0], isSystem: obj.system })
   })
 
 program
@@ -59,7 +59,7 @@ program
   .arguments("[env...]")
   .description("start a dev server")
   .action((env, obj) => {
-    start({ appName: env[0], system: obj.system })
+    start({ appName: env[0], isSystem: obj.system })
   })
 
 program

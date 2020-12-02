@@ -1,3 +1,4 @@
+const fs = require("fs")
 const path = require("path")
 const styledComponentsTransformer = require("typescript-plugin-styled-components").default()
 const TerserJSPlugin = require("terser-webpack-plugin")
@@ -8,7 +9,6 @@ const HtmlWebpackPlugin = require("html-webpack-plugin")
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
 const InterpolateHtmlPlugin = require("interpolate-html-plugin")
 const CopyPlugin = require("copy-webpack-plugin")
-const VueLoaderPlugin = require("vue-loader").VueLoaderPlugin
 
 const paths = require("./paths")
 const env = require("./env")
@@ -17,6 +17,20 @@ const userConfig = require(paths.Config)
 const useOutputHash =
   env.isEnvProduction && (userConfig.output && userConfig.output.hash === false ? false : true)
 const useTs = userConfig.useTs
+
+try {
+  const hasVue3Compiler = fs.existsSync(path.resolve("node_modules/@vue/compiler-sfc"))
+  const hasVue2Compiler = fs.existsSync(path.resolve("vue-template-compiler"))
+  if (hasVue3Compiler && !hasVue2Compiler) {
+    var vueVersion = 3
+  } else if (!hasVue3Compiler && hasVue2Compiler) {
+    var vueVersion = 2
+  } else if (hasVue3Compiler && hasVue2Compiler) {
+    throw new Error("You have two version of vue template compiler")
+  }
+} catch (err) {
+  console.log(err)
+}
 
 const entry = obj => {
   const { appName } = obj
@@ -45,12 +59,32 @@ const output = obj => {
       chunkFilename: `${outputApp}${appHash}.chunk.js`,
       path: paths.Output,
     },
-    obj.system
+    obj.isSystem
       ? {
           libraryTarget: "system",
         }
       : {}
   )
+}
+
+const plugins = obj => {
+  const { isSystem } = obj
+
+  if (vueLoaderVersion === 2) {
+  } else if (vueLoaderVersion === 3) {
+    var VueLoaderPlugin = require("vue-loader-v16").VueLoaderPlugin
+  }
+
+  return {
+    htmlWebpackPlugin: !isSystem ? htmlWebpackPlugin : false,
+    copyPlugin: !isSystem ? copyPlugin : false,
+    interpolateHtmlPlugin: !isSystem ? interpolateHtmlPlugin : false,
+    cleanWebpackPlugin: env.isEnvProduction ? cleanWebpackPlugin : false,
+    miniExtractPlugin: !isSystem ? miniExtractPlugin : false,
+    terserJSPlugin,
+    optimizeCSSAssetsPlugin,
+    vueLoaderPlugin: VueLoaderPlugin,
+  }
 }
 
 const tsLoader = {
@@ -72,10 +106,13 @@ const jsLoader = {
   loader: "babel-loader",
 }
 
-const vueLoader = {
-  test: /\.vue$/,
-  loader: "vue-loader",
-}
+const vueLoader =
+  vueLoaderVersion === 16
+    ? { test: /\.vue$/, loader: require("vue-loader-v16") }
+    : {
+        test: /\.vue$/,
+        loader: "vue-loader",
+      }
 
 const styleLoader = {
   loader: "style-loader",
@@ -204,12 +241,11 @@ const miniExtractPlugin = new MiniCssExtractPlugin({
   ignoreOrder: false, // Enable to remove warnings about conflicting order
 })
 
-const vueLoaderPlugin = new VueLoaderPlugin()
-
 module.exports = function(obj) {
   return {
     entry: entry(obj),
     output: output(obj),
+    userConfig,
     config: {
       useOutputHash,
       useTs,
@@ -220,13 +256,13 @@ module.exports = function(obj) {
       vue: vueLoader,
       css: {
         test: /.css$/,
-        use: obj.system
+        use: obj.isSystem
           ? [styleLoader, cssLoader]
           : [env.isEnvProduction ? MiniCssExtractPlugin.loader : styleLoader, cssLoader],
       },
       less: {
         test: /.less$/,
-        use: obj.system
+        use: obj.isSystem
           ? [styleLoader, cssLoader, lessLoader]
           : [
               env.isEnvProduction ? MiniCssExtractPlugin.loader : styleLoader,
@@ -240,16 +276,7 @@ module.exports = function(obj) {
       cssLoader,
       lessLoader,
     },
-    plugins: {
-      htmlWebpackPlugin: !obj.system ? htmlWebpackPlugin : false,
-      copyPlugin: !obj.system ? copyPlugin : false,
-      interpolateHtmlPlugin: !obj.system ? interpolateHtmlPlugin : false,
-      cleanWebpackPlugin: env.isEnvProduction ? cleanWebpackPlugin : false,
-      miniExtractPlugin: !obj.system ? miniExtractPlugin : false,
-      terserJSPlugin,
-      optimizeCSSAssetsPlugin,
-      vueLoaderPlugin,
-    },
+    plugins: plugins(obj),
     // splitChunks: !obj.system
     //   ? {
     //       name: false,
