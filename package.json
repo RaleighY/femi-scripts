@@ -1,6 +1,6 @@
 {
   "name": "femi-scripts",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": "raleighy <raleighy@163.com>",
   "homepage": "https://github.com/RaleighY/femi-scripts",
   "keywords": [
@@ -79,7 +79,8 @@
     "typescript-plugin-styled-components": "^1.4.3",
     "url-loader": "^2.1.0",
     "vue": "^2.6.12",
-    "vue-loader": "^16.1.0",
+    "vue-loader": "^15.9.5",
+    "vue-loader-v16": "npm:vue-loader@16.1.0",
     "vue-router": "^3.4.5",
     "webpack": "^4.37.0",
     "webpack-dev-server": "^3.7.2"
