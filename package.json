@@ -1,6 +1,6 @@
 {
   "name": "femi-scripts",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "author": "raleighy <raleighy@163.com>",
   "homepage": "https://github.com/RaleighY/femi-scripts",
   "keywords": [
@@ -68,6 +68,7 @@
     "react-dom": "^16.12.0",
     "react-helmet": "^5.2.1",
     "react-router-dom": "^5.1.2",
+    "shelljs": "^0.8.4",
     "single-spa": "^5.5.5",
     "single-spa-react": "^3.0.1",
     "style-loader": "^1.0.0",

@@ -5,7 +5,7 @@ module.exports = function(obj) {
   const WebpackDevServer = require("webpack-dev-server")
   const configFac = require("../config/webpack.config")
   const paths = require("../config/paths")
-  const userConfig = require(paths.Config)
+  const userConfig = require(paths.userConfig)
 
   const webpackConfig = configFac(obj)
 

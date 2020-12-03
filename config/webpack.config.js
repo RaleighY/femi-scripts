@@ -5,7 +5,7 @@ const divers = require("./divers")
 
 module.exports = function configFac(obj) {
   const env = envFac(obj)
-  const { entry, output, loaders, plugins, splitChunks, config, devtool, externals } = divers(env)
+  const { alias, entry, output, loaders, plugins, splitChunks, devtool, externals } = divers(env)
 
   return {
     mode: env.NODE_ENV,
@@ -22,15 +22,8 @@ module.exports = function configFac(obj) {
       ],
     },
     resolve: {
-      plugins: [
-        config.useTs !== false &&
-          new TsconfigPathsPlugin({
-            /*configFile: "./path/to/tsconfig.json" */
-          }),
-      ].filter(Boolean),
-      alias: {
-        // "@appReact": paths.resolveApp("src/apps/appReact"),
-      },
+      plugins: [plugins.tsconfigPathsPlugin].filter(Boolean),
+      alias,
       extensions: [".js", ".jsx", ".ts", ".tsx", ".vue"],
     },
     optimization: {

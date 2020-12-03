@@ -1,6 +1,7 @@
 const fs = require("fs")
 const path = require("path")
 const webpack = require("webpack")
+const shell = require("shelljs")
 const styledComponentsTransformer = require("typescript-plugin-styled-components").default()
 const TerserJSPlugin = require("terser-webpack-plugin")
 const safePostCssParser = require("postcss-safe-parser")
@@ -10,45 +11,71 @@ const HtmlWebpackPlugin = require("html-webpack-plugin")
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
 const InterpolateHtmlPlugin = require("interpolate-html-plugin")
 const CopyPlugin = require("copy-webpack-plugin")
+const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin")
 const DefinePlugin = webpack.DefinePlugin
 
 const paths = require("./paths")
-const userConfig = require(paths.Config)
+const userConfig = require(paths.userConfig)
+let tsconfig
+
+if (fs.existsSync(paths.tsconfig)) {
+  tsconfig = require(paths.tsconfig)
+}
 
 module.exports = function(env) {
+  const { appName } = env
+  const { entry: userEntry, alias } = userConfig
   const useOutputHash = userConfig.output && userConfig.output.hash === false ? false : true
-  const useTs = userConfig.useTs
+
+  const tsconfigPaths = {}
+
+  Object.keys(alias).forEach(key => {
+    if (tsconfig) {
+      tsconfigPaths[key] = [alias[key]]
+    }
+    alias[key] = paths.resolveApp(alias[key])
+  })
+
+  if (tsconfig) {
+    tsconfig.compilerOptions.paths = tsconfigPaths
+    fs.writeFileSync(paths.tsconfig, JSON.stringify(tsconfig))
+    shell.exec(`prettier --write ${paths.resolveApp(paths.tsconfig)}`)
+  }
 
   const hasVue3Compiler = fs.existsSync(path.resolve("node_modules/@vue/compiler-sfc"))
   const hasVue2Compiler = fs.existsSync(path.resolve("node_modules/vue-template-compiler"))
   const vueVersion = hasVue3Compiler ? 3 : hasVue2Compiler ? 2 : 0
 
-  const entry = env => {
-    const { appName } = env
-    const { entry } = userConfig
+  const entry = () => {
+    if (!userEntry) {
+      console.log('Please add { ..."entry": "your entry path" ... } in "femi.json"')
+      process.exit(0)
+    }
 
     if (appName) {
-      if (entry[appName]) {
+      if (userEntry[appName]) {
         console.log(`Current Env:`, env.NODE_ENV)
         console.log(`Current App:`, appName)
-        console.log(`Current Entry:`, entry[appName])
-        return entry[appName]
+        console.log(`Current Entry:`, userEntry[appName])
+        return userEntry[appName]
       } else {
-        throw new Error(`${appName} Entry Not Found`)
+        throw new Error(`${appName} entry not found`)
       }
     } else {
-      if (entry.default) {
+      if (userEntry.default) {
         console.log(`Current Env:`, env.NODE_ENV)
         console.log(`Current App:`, "default")
-        console.log(`Current Entry:`, entry.default)
-        return entry[Main]
-      } else if (typeof entry === "string") {
-        return entry
+        console.log(`Current Entry:`, userEntry.default)
+        return userEntry.default
+      } else if (typeof userEntry === "string") {
+        return userEntry
+      } else {
+        console.log("You have not assign default entry.")
       }
     }
   }
 
-  const output = env => {
+  const output = () => {
     const outputApp = env.appName ? `${env.appName}/js/[name]` : "js/[name]"
     const appHash = env.isEnvProduction && useOutputHash ? ".[chunkhash:8]" : ""
     return Object.assign(
@@ -56,7 +83,7 @@ module.exports = function(env) {
         publicPath: process.env.PUBLIC_URL ? process.env.PUBLIC_URL + "/" : "/",
         filename: `${outputApp}${appHash}.js`,
         chunkFilename: `${outputApp}${appHash}.chunk.js`,
-        path: paths.Output,
+        path: paths.output,
       },
       env.isSystem
         ? {
@@ -66,7 +93,7 @@ module.exports = function(env) {
     )
   }
 
-  const plugins = env => {
+  const plugins = () => {
     const { isSystem } = env
 
     const VueLoaderPlugin = require(vueVersion === 3 ? "vue-loader-v16" : "vue-loader")
@@ -79,6 +106,7 @@ module.exports = function(env) {
       miniExtractPlugin: !isSystem && miniExtractPlugin,
       cleanWebpackPlugin: env.isEnvProduction && cleanWebpackPlugin,
       vueLoaderPlugin: vueVersion !== 0 && new VueLoaderPlugin(),
+      tsconfigPathsPlugin: tsconfig && new TsconfigPathsPlugin(),
       terserJSPlugin,
       optimizeCSSAssetsPlugin,
       definePlugin,
@@ -203,7 +231,7 @@ module.exports = function(env) {
   const htmlWebpackPlugin = new HtmlWebpackPlugin(
     Object.assign({
       inject: true,
-      template: paths.Html,
+      template: paths.html,
       minify: {
         removeComments: true,
         collapseWhitespace: true,
@@ -258,13 +286,10 @@ module.exports = function(env) {
   }
 
   return {
-    entry: entry(env),
-    output: output(env),
     userConfig,
-    config: {
-      useOutputHash,
-      useTs,
-    },
+    entry: entry(),
+    output: output(),
+    alias,
     loaders: {
       js: jsLoader,
       ts: tsLoader,
@@ -291,7 +316,7 @@ module.exports = function(env) {
       cssLoader,
       lessLoader,
     },
-    plugins: plugins(env),
+    plugins: plugins(),
     // splitChunks,
     devtool: env.isEnvDevelopment ? "source-map" : false,
     externals: (env.isEnvProduction && userConfig.externals) || [],
