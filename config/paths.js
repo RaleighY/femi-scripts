@@ -11,20 +11,11 @@ if (!Config.entry) {
   process.exit(0)
 }
 
-const Entry = Object.keys(Config.entry)
-  .map(appKey => {
-    return { [`Entry_${appKey}`]: resolveApp(Config.entry[appKey]) }
-  })
-  .reduce((prev, current) => {
-    return Object.assign(prev, current)
-  })
-
-module.exports = Object.assign(Entry, {
+module.exports = {
   DockerfileServer: path.resolve(__dirname, "../docker/server/Dockerfile"),
   DockerfileClient: path.resolve(__dirname, "../docker/client/Dockerfile"),
   Config: resolveApp("femi.json"),
   Output: resolveApp("dist" + (process.env.PUBLIC_URL || "")),
   Html: resolveApp("public/index.html"),
-  Favicon: resolveApp("public/favicon.png"),
   resolveApp,
-})
+}

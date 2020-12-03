@@ -1,7 +1,7 @@
 // Make sure that including paths.js after env.js will read .env variables.
 // delete require.cache[require.resolve("./paths")]
 
-function envFactory() {
+function envFactory(obj) {
   const env = Object.keys(process.env).reduce((value, key) => {
     value[key] = process.env[key]
     return value
@@ -9,6 +9,8 @@ function envFactory() {
 
   env.isEnvDevelopment = env.NODE_ENV === "development"
   env.isEnvProduction = env.NODE_ENV === "production"
+  env.appName = obj.appName
+  env.isSystem = obj.isSystem
 
   const envStringified = {
     "process.env": Object.keys(env).reduce((v, key) => {
@@ -22,4 +24,4 @@ function envFactory() {
   return env
 }
 
-module.exports = envFactory()
+module.exports = envFactory

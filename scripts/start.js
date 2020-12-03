@@ -5,8 +5,7 @@ module.exports = function(obj) {
   const WebpackDevServer = require("webpack-dev-server")
   const configFac = require("../config/webpack.config")
   const paths = require("../config/paths")
-
-  const Config = require(paths.Config)
+  const userConfig = require(paths.Config)
 
   const webpackConfig = configFac(obj)
 
@@ -18,10 +17,10 @@ module.exports = function(obj) {
 
   const devServer = new WebpackDevServer(compiler, {
     historyApiFallback: true,
-    proxy: Config.proxy,
+    proxy: userConfig.proxy,
   })
 
-  devServer.listen(Config.port || 4000, "localhost", err => {
+  devServer.listen(userConfig.port || 4000, "localhost", err => {
     if (err) {
       return console.log(err)
     }
