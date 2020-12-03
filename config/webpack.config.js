@@ -1,5 +1,3 @@
-const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin")
-
 const envFac = require("./env")
 const divers = require("./divers")
 

@@ -16,30 +16,30 @@ const DefinePlugin = webpack.DefinePlugin
 
 const paths = require("./paths")
 const userConfig = require(paths.userConfig)
-let tsconfig
-
-if (fs.existsSync(paths.tsconfig)) {
-  tsconfig = require(paths.tsconfig)
-}
 
 module.exports = function(env) {
   const { appName } = env
   const { entry: userEntry, alias } = userConfig
   const useOutputHash = userConfig.output && userConfig.output.hash === false ? false : true
 
-  const tsconfigPaths = {}
+  let tsconfig
+  if (fs.existsSync(paths.tsconfig)) {
+    tsconfig = require(paths.tsconfig)
+  }
 
-  Object.keys(alias).forEach(key => {
+  if (alias) {
+    const tsconfigPaths = {}
+    Object.keys(alias).forEach(key => {
+      if (tsconfig) {
+        tsconfigPaths[key] = [alias[key]]
+      }
+      alias[key] = paths.resolveApp(alias[key])
+    })
     if (tsconfig) {
-      tsconfigPaths[key] = [alias[key]]
+      tsconfig.compilerOptions.paths = tsconfigPaths
+      fs.writeFileSync(paths.tsconfig, JSON.stringify(tsconfig))
+      shell.exec(`prettier --write ${paths.resolveApp(paths.tsconfig)}`)
     }
-    alias[key] = paths.resolveApp(alias[key])
-  })
-
-  if (tsconfig) {
-    tsconfig.compilerOptions.paths = tsconfigPaths
-    fs.writeFileSync(paths.tsconfig, JSON.stringify(tsconfig))
-    shell.exec(`prettier --write ${paths.resolveApp(paths.tsconfig)}`)
   }
 
   const hasVue3Compiler = fs.existsSync(path.resolve("node_modules/@vue/compiler-sfc"))
