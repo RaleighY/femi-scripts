@@ -22,6 +22,6 @@ RUN yarn build
 ### stage: run ###
 FROM nginx:alpine
 COPY --from=build /source/dist /source
-COPY docker/nginx.conf /etc/nginx/nginx.conf
+COPY node_modules/femi-scripts/docker/client/nginx.conf /etc/nginx/nginx.conf
 RUN rm -f /etc/nginx/conf.d/* /etc/nginx/sites-enabled/*
-COPY docker/site.conf /etc/nginx/conf.d/
+COPY node_modules/femi-scripts/docker/site.conf /etc/nginx/conf.d/

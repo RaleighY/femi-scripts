@@ -5,6 +5,7 @@ const program = require("commander")
 const packageJson = require("../package.json")
 const start = require("../scripts/start")
 const build = require("../scripts/build")
+const docker = require("../scripts/docker")
 
 program.version(packageJson.version)
 
@@ -37,14 +38,6 @@ function GoSpawn(script, args) {
 }
 
 program
-  .command("docker")
-  .arguments("[env...]")
-  .description("docker build image")
-  .action(env => {
-    GoSpawn("docker", env)
-  })
-
-program
   .command("build")
   .option("-s, --system", "build target system")
   .arguments("[env...]")
@@ -60,6 +53,14 @@ program
   .description("start a dev server")
   .action((env, obj) => {
     start({ appName: env[0], isSystem: obj.system })
+  })
+
+program
+  .command("docker <imageType> <imageName>")
+  .arguments("[env...]")
+  .description("docker build image")
+  .action((imageType, imageName) => {
+    docker({ imageType, imageName })
   })
 
 program

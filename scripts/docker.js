@@ -1,17 +1,18 @@
 const spawn = require("cross-spawn")
 const paths = require("../config/paths")
 
-const args = process.argv.slice(2)
+module.exports = function(obj) {
+  const { imageType, imageName } = obj
+  const realImageType = imageType[0].toUpperCase() + imageType.toLowerCase().slice(1)
 
-if (args.length) {
-  var typeAndname = args[0].split(":")
-  var type = typeAndname[0][0].toUpperCase() + typeAndname[0].slice(1)
-  var name = typeAndname[1]
+  // docker build ./ -f ./docker/Dockerfile -t femi
+  const result = spawn.sync(
+    "docker",
+    ["build", "./", "-f", paths["dockerfile" + realImageType], "-t", imageName],
+    {
+      stdio: "inherit",
+    }
+  )
+
+  console.log(result)
 }
-
-// docker build ./ -f ./docker/Dockerfile -t femi
-const result = spawn.sync("docker", ["build", "./", "-f", paths["Dockerfile" + type], "-t", name], {
-  stdio: "inherit",
-})
-
-console.log(result)
