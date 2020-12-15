@@ -1,32 +1,26 @@
-const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin")
-const { CleanWebpackPlugin } = require("clean-webpack-plugin")
-
-const env = require("./env")
+const envFac = require("./env")
 const divers = require("./divers")
 
 module.exports = function configFac() {
-  const env = envFac(obj)
+  const env = envFac()
   const { alias, entry, output, loaders, plugins, splitChunks, devtool, externals } = divers(env)
 
   return {
     target: "node",
     mode: env.NODE_ENV,
-    entry: divers.entry,
-    output: divers.output(),
+    entry: entry,
+    output: output,
     module: {
-      rules: [divers.loaders.ts],
+      rules: [loaders.ts],
     },
     resolve: {
-      plugins: [
-        new TsconfigPathsPlugin({
-          /*configFile: "./path/to/tsconfig.json" */
-        }),
-      ],
+      plugins: [plugins.tsconfigPathsPlugin].filter(Boolean),
+      alias,
       extensions: [".js", ".jsx", ".ts", ".tsx"],
     },
-    plugins: [new CleanWebpackPlugin()],
-    devtool: env.isEnvDevelopment ? "source-map" : false,
-    externals: [],
+    plugins: [plugins.cleanWebpackPlugin].filter(Boolean),
+    devtool,
+    externals,
     node: {
       fs: "empty",
       net: "empty",

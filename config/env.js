@@ -7,10 +7,18 @@ function envFactory(obj) {
     return value
   }, {})
 
+  const keyArr = ["appName", "isSystem"]
+
   env.isEnvDevelopment = env.NODE_ENV === "development"
   env.isEnvProduction = env.NODE_ENV === "production"
-  env.appName = obj.appName
-  env.isSystem = obj.isSystem
+
+  if (obj) {
+    keyArr.forEach(key => {
+      if (obj[key]) {
+        env[key] = obj[key]
+      }
+    })
+  }
 
   const envStringified = {
     "process.env": Object.keys(env).reduce((v, key) => {

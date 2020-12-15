@@ -71,6 +71,7 @@ module.exports = function(env) {
         return userEntry
       } else {
         console.log("You have not assign default entry.")
+        return
       }
     }
   }
