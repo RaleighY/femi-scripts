@@ -18,7 +18,7 @@ const paths = require("./paths")
 const userConfig = require(paths.userConfig)
 
 module.exports = function(env) {
-  const { appName } = env
+  const { appEntry } = env
   const { entry: userEntry, alias } = userConfig
   const useOutputHash = userConfig.output && userConfig.output.hash === false ? false : true
 
@@ -36,7 +36,7 @@ module.exports = function(env) {
       alias[key] = paths.resolveApp(alias[key])
     })
     if (tsconfig) {
-      tsconfig.compilerOptions.paths = tsconfigPaths
+      tsconfig.compilerOptions.paths = Object.assign(tsconfig.compilerOptions.paths, tsconfigPaths)
       fs.writeFileSync(paths.tsconfig, JSON.stringify(tsconfig))
       shell.exec(`prettier --write ${paths.resolveApp(paths.tsconfig)}`)
     }
@@ -52,14 +52,14 @@ module.exports = function(env) {
       process.exit(0)
     }
 
-    if (appName) {
-      if (userEntry[appName]) {
+    if (appEntry) {
+      if (userEntry[appEntry]) {
         console.log(`Current Env:`, env.NODE_ENV)
-        console.log(`Current App:`, appName)
-        console.log(`Current Entry:`, userEntry[appName])
-        return userEntry[appName]
+        console.log(`Current App:`, appEntry)
+        console.log(`Current Entry:`, userEntry[appEntry])
+        return userEntry[appEntry]
       } else {
-        throw new Error(`${appName} entry not found`)
+        throw new Error(`${appEntry} entry not found`)
       }
     } else {
       if (userEntry.default) {
@@ -77,7 +77,7 @@ module.exports = function(env) {
   }
 
   const output = () => {
-    const outputApp = env.appName ? `${env.appName}/js/[name]` : "js/[name]"
+    const outputApp = env.appEntry ? `${env.appEntry}/js/[name]` : "js/[name]"
     const appHash = env.isEnvProduction && useOutputHash ? ".[chunkhash:8]" : ""
     return Object.assign(
       {

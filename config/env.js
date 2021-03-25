@@ -7,7 +7,7 @@ function envFactory(obj) {
     return value
   }, {})
 
-  const keyArr = ["appName", "isSystem"]
+  const keyArr = ["appEntry", "isSystem"]
 
   env.isEnvDevelopment = env.NODE_ENV === "development"
   env.isEnvProduction = env.NODE_ENV === "production"
